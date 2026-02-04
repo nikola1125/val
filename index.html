@@ -179,7 +179,7 @@
             }
         }
 
-        /* Button wrapper - Flex container */
+        /* Button wrapper */
         .button-wrapper {
             display: inline-flex;
             gap: 1rem;
@@ -231,12 +231,15 @@
                 YES! 💖
             </button>
 
-            <!-- No Button - Will be positioned by JS -->
+            <!-- No Button - Will be positioned immediately to the right of Yes -->
             <button id="noBtn" class="bg-gray-400 text-white font-bold py-3 px-6 rounded-full text-lg shadow-md opacity-80">
                 No... 💔
             </button>
         </div>
 
+        <p class="mt-6 text-pink-600 text-sm italic">
+            *Move your mouse to clear the roses and try to catch that "No" button!*
+        </p>
     </div>
 </div>
 
@@ -375,18 +378,22 @@
         });
     });
 
-    // Initialize No Button right next to Yes button
+    // Initialize No Button immediately to the right of Yes button
     function initializeNoButton() {
+        // Get Yes button position
         const yesRect = yesBtn.getBoundingClientRect();
 
-        // Position immediately to the right of Yes button
-        const startX = yesRect.right + 16; // 16px gap
+        // Position No button immediately to the right with small gap
+        const gap = 16; // 16px gap between buttons
+        const startX = yesRect.right + gap;
         const startY = yesRect.top;
 
+        // Apply position
         noBtn.style.left = startX + 'px';
         noBtn.style.top = startY + 'px';
 
         isInitialized = true;
+        console.log('No button initialized at:', startX, startY);
     }
 
     // Move No button within screen bounds
@@ -494,10 +501,21 @@
         }
     }
 
-    // Initialize on load - wait for layout to settle
+    // Initialize immediately when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(initializeNoButton, 0);
+        });
+    } else {
+        // DOM already loaded
+        setTimeout(initializeNoButton, 0);
+    }
+
+    // Also initialize on full load to ensure styles are applied
     window.addEventListener('load', () => {
-        // Small delay to ensure all styles are applied
-        setTimeout(initializeNoButton, 100);
+        if (!isInitialized) {
+            initializeNoButton();
+        }
     });
 
     // Handle resize
